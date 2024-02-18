@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concentration Timer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="app">
+        <h1>Concentration Timer</h1>
+        <div id="timer">00:00:00</div>
+        <!-- <label for="duration">Enter duration (in minutes):</label>
+        <input type="number" id="duration" value="25" min="1" />         -->
+        <button id="start">Start Concentration</button>
+        <button id="interrupt" style="display: none;">Lost Concentration</button>
+        <div id="results" style="display: none;">
+            <p>Did you keep your concentration?</p>
+            <button id="yes">Yes</button>
+            <button id="no">No</button>
+        </div>
+    </div>
+    <audio id="timer-sound" src="alarm.wav" type="audio/wav"></audio>
+    <script src="script.js"></script>
+</body>
+</html>
