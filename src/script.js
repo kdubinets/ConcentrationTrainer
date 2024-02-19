@@ -8,6 +8,8 @@ const noButton = document.getElementById('no');
 let interval = 1 * 30; // Start with a 25 minute interval
 let running = false;
 
+const sound = document.getElementById('timer-sound');
+
 init();
 
 function init() {
@@ -26,9 +28,15 @@ function updateTimeText(secondsLeft) {
     timerDisplay.textContent = `${hours}:${minutes}:${seconds}`;
 }
 
-let countdownTimer;  // Used to hold the time id
+let countdownTimer;  // Used to hold the time countodown timer id
+let alarmTimer;  // Used to hold the alarm playing sound timer id
 
 function startTimer(duration) {
+    sound.load();
+    alarmTimer = setTimeout(function() {
+        sound.play(); // Play the ending sound
+    }, duration*1000);
+    
     let timer = duration;
     countdownTimer = setInterval(function () {
         updateTimeText(timer);
@@ -43,7 +51,6 @@ function startTimer(duration) {
 function timerFinished() {
     running = false;
     clearInterval(countdownTimer); // Clear the countdown interval
-    const sound = document.getElementById('timer-sound');
     sound.play(); // Play the ending sound
     interruptButton.style.display = 'none';
     results.style.display = 'block';
