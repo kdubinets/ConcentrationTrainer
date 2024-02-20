@@ -42,7 +42,6 @@ function startTimer(duration) {
         updateTimeText(timer);
 
         if (--timer < 0) {
-            clearInterval(countdownTimer);
             timerFinished();
         }
     }, 1000);
@@ -50,8 +49,8 @@ function startTimer(duration) {
 
 function timerFinished() {
     running = false;
-    clearInterval(countdownTimer); // Clear the countdown interval
-    sound.play(); // Play the ending sound
+    clearInterval(countdownTimer);
+    clearTimeout(alarmTimer);
     interruptButton.style.display = 'none';
     results.style.display = 'block';
 }
@@ -81,7 +80,7 @@ startButton.addEventListener('click', function() {
 });
 
 interruptButton.addEventListener('click', function() {
-    clearInterval(countdownTimer);
+    timerFinished();
     updateInterval(false);
 });
 
