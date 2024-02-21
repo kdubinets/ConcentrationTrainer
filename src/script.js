@@ -25,6 +25,7 @@ function updateTimeText(secondsLeft) {
 
 let interval;
 let running = false;
+let wakeLock;
 
 let currentSession = {};
 let history = [];
@@ -74,6 +75,8 @@ function startTimer(duration) {
             timerFinished();
         }
     }, 1000);
+
+    wakeLock = navigator.wakeLock.request("screen");
 }
 
 function timerFinished() {
@@ -82,19 +85,11 @@ function timerFinished() {
     clearTimeout(alarmTimer);
     interruptButton.style.display = 'none';
     results.style.display = 'block';
+
+    wakeLock.then((sentinel) => sentinel.release());
 }
 
 function updateInterval(success) {
-    // const previousIntervals = JSON.parse(localStorage.getItem('concentrationIntervals')) || [];
-    // previousIntervals.push({interval: interval / 60, success});
-    // localStorage.setItem('concentrationIntervals', JSON.stringify(previousIntervals));
-
-    // if (success) {
-    //     interval += 5 * 60; // Increase by 5 minutes
-    // } else {
-    //     interval = Math.max(5 * 60, interval - 5 * 60); // Decrease by 5 minutes but not below 5 minutes
-    // }
-
     startButton.textContent = 'Start Concentration';
     results.style.display = 'none';
 }

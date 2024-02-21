@@ -1,6 +1,6 @@
 # To Do
 
-- Implement lock screen prevention for the duration of the timer  
+- \+ Implement lock screen prevention for the duration of the timer  
     let wakeLock = await navigator.wakeLock.request("screen");
     wakeLock.release();
 - Implement concentration interval calculation
