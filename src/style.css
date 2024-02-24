@@ -19,6 +19,12 @@ button {
     font-size: 24px;
 }
 
+#error p {
+    font-size: 24px;
+    color: red;
+}
+
+
 #admin {
     text-align: right;
     font-size:  1.8em; /* Adjust the size as needed */
