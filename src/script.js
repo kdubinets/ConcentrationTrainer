@@ -32,14 +32,17 @@ let history = [];
 
 // parameters for models to calculate new duration and adjust concentration interval
 let modelParams = {
+    minSessionTime: 30,
+    startIntervalSec: 60,
     historyLength: 20,
-    distractionEstimateSec: 30,
+    distractionEstimateSec: 20,
     maxGrowRate: 1.1,
     recentHistoryMin: 120,
     recentHistoryQuantMin: 10,
     recentHistoryAdjustment: 1.05,
     morningAdjusment: 1.1,
     nightAdjusment: 1.1,
+    stdDevs: 1
 };
 
 init();
@@ -76,7 +79,9 @@ function startTimer(duration) {
         }
     }, 1000);
 
-    wakeLock = navigator.wakeLock.request("screen");
+    if (navigator.wakeLock) {
+        wakeLock = navigator.wakeLock.request("screen");
+    }
 }
 
 function timerFinished() {
@@ -86,7 +91,9 @@ function timerFinished() {
     interruptButton.style.display = 'none';
     results.style.display = 'block';
 
-    wakeLock.then((sentinel) => sentinel.release());
+    if (wakeLock) {
+        wakeLock.then((sentinel) => sentinel.release());
+    }
 }
 
 function updateInterval(success) {
@@ -158,13 +165,65 @@ function storeHistory(history) {
     localStorage.setItem('sessionsHistory', JSON.stringify(history));
 }
 
-
 function calculateConcentrationTime(history) {
-    if (history === null) {
-        return 30;
-    } else {
-        return 30 + history.length;
+    if (history === null || history.length == 0) {
+        return modelParams.startIntervalSec;
     }
+
+    console.log("calculateConcentrationTime: non empty history");
+
+    let durations = [];
+    for (let session of history.reverse()) {
+        if (durations.length >= modelParams.historyLength) {
+            break;
+        }
+
+        if (session.adjustedDurationSec === undefined) {
+            session.adjustedDurationSec = session.realDurationSec;
+        }
+        
+        if (session.adjustedDurationSec < modelParams.minSessionTime) {
+            continue;
+        }
+
+        durations.push(session.adjustedDurationSec);
+    }
+
+    let num = durations.length;
+
+    if (num == 0) {
+        console.log("No histrory entries fitting minimum length found. Returning default starting duration.");
+        return modelParams.startIntervalSec;
+    }
+
+    let sum = 0;
+    for(let duration of durations) {
+        sum += duration;
+    }
+    let avg = sum / num;
+    console.log("Results: avg = " + avg);
+
+    let squares = 0;
+    for(let duration of durations) {
+        squares += (duration - avg) ** 2;
+    }
+    let variance = squares / num;
+    console.log("Results: variance = " + variance);
+    
+    let stdDev = Math.sqrt(variance);
+    console.log("Results: stdDev = " + stdDev);
+
+    if (stdDev <= avg / 20) { // edge case when there is only one result in history
+        stdDev = avg / 10;
+    }
+
+    let concentrationTime = avg + stdDev * modelParams.stdDevs;
+    console.log("Results: concentrationTime = " + concentrationTime);
+
+    concentrationTime = Math.max(concentrationTime, modelParams.minSessionTime*2);
+    console.log("Results: adjusted concentrationTime = " + concentrationTime);
+
+    return concentrationTime;
 }
 
 function calculateAdjustedDuration(session) {
