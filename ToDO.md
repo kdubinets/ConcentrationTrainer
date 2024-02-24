@@ -2,7 +2,7 @@
 
 - \+ Implement lock screen prevention for the duration of the timer  
 - \+ Implement concentration interval calculation
-- Create page to get/set history data
+- \+ Create page to get/set history data
 - Implement top page
 - Remove "Concentration Running..." during timer running
 - Code Refactoring
