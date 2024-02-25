@@ -42,7 +42,8 @@ let modelParams = {
     recentHistoryAdjustment: 1.05,
     morningAdjusment: 1.1,
     nightAdjusment: 1.1,
-    stdDevs: 1
+    targetSuccessRate: 0.80,
+    stdDevs: 2
 };
 
 init();
@@ -173,6 +174,7 @@ function calculateConcentrationTime(history) {
     console.log("calculateConcentrationTime: non empty history");
 
     let durations = [];
+    let successes = 0;
     for (let session of history.reverse()) {
         if (durations.length >= modelParams.historyLength) {
             break;
@@ -187,6 +189,9 @@ function calculateConcentrationTime(history) {
         }
 
         durations.push(session.adjustedDurationSec);
+        if (session.succesfull) {
+            successes += 1;
+        }
     }
 
     let num = durations.length;
@@ -213,11 +218,14 @@ function calculateConcentrationTime(history) {
     let stdDev = Math.sqrt(variance);
     console.log("Results: stdDev = " + stdDev);
 
-    if (stdDev <= avg / 20) { // edge case when there is only one result in history
+    if (stdDev <= avg / 20) { // if there are very little variance in the results
         stdDev = avg / 10;
     }
 
-    let concentrationTime = avg + stdDev * modelParams.stdDevs;
+    const stdDevMulti =  (1 + (successes/num - modelParams.targetSuccessRate)) * modelParams.stdDevs;
+    console.log("Results: stdDevMulti = " + stdDevMulti);
+
+    let concentrationTime = avg + stdDev * stdDevMulti;
     console.log("Results: concentrationTime = " + concentrationTime);
 
     concentrationTime = Math.max(concentrationTime, modelParams.minSessionTime*2);
