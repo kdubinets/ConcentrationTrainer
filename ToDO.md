@@ -6,6 +6,7 @@
 - Create page simplifying sharing the historical data
 - Create better debug logging support for mobile devices
 - Create flag allowing to bypath actual timer waits
+- \+ Fix size of text area in the admin page
 - Implement top page
 - Remove "Concentration Running..." during timer running
 - Code Refactoring

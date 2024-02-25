@@ -31,3 +31,9 @@ button {
     bottom:  0;
     right:  0;
 }
+
+#history {
+    width:   90vw; /*  90% of the viewport width */
+    height:  80vh; /*  90% of the viewport height */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
